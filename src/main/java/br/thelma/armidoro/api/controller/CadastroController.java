@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 @RestController
 @RequestMapping("/cadastrar")
 @SecurityRequirement(name = "bearer-key")
@@ -55,10 +57,7 @@ public class CadastroController {
 
     @PutMapping
     public ResponseEntity efetuarCadastro(@RequestBody @Valid DadosCadastroPin dados){
-        boolean bate = ! acessoCadastroRepository.findPorPin(dados.pin().login(), dados.pin().pin())
-                .stream()
-                .filter(c -> { return emailService.estaInvalido(c.getData());
-                }).toList().isEmpty();
+        boolean bate = acessoCadastroRepository.findPorPin(dados.pin().login(), dados.pin().pin()).estaInvalido(LocalDateTime.now());
 
         if(bate){
             usuarioRepository.save(new Usuario(dados.usuario()));

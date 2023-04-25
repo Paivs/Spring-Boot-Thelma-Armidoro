@@ -25,5 +25,5 @@ public interface AcessoCadastroRepository extends JpaRepository<AcessoCadastro, 
             and
             a.ativo = 1
             """)
-    List<AcessoCadastro> findPorPin(String login, String pin);
+    AcessoCadastro findPorPin(String login, String pin);
 }

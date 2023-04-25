@@ -50,21 +50,7 @@ Esse é seu PIN:""" + " " + pin + "\n\nAté a próxima! Não é necessário resp
         enviarEmailTexto(destinatario,"PIN Thelma Amidoro" ,mensagem);
     }
 
-    public boolean estaInvalido(LocalDateTime dataPin){
-        LocalDateTime dataAgora = LocalDateTime.now();
-        System.out.println("-- TESTE DE PIN --");
 
-        if (dataPin.plusMinutes(5).isBefore(dataAgora)){
-            System.out.println("PIN INVÁLIDO");
-            return false;
-        } else if(dataPin.plusMinutes(5).isAfter(dataAgora) || dataPin.plusMinutes(5).isEqual(dataAgora)){
-            System.out.println("PIN VÁLIDO");
-            return true;
-        }else{
-            System.out.println("PIN: ERRO DE LEITURA");
-            return false;
-        }
-    }
 
 
 }

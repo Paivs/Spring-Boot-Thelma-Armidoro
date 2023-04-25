@@ -5,6 +5,7 @@ import br.thelma.armidoro.api.domain.usuario.DadosCadastroUsuario;
 import br.thelma.armidoro.api.domain.usuario.Usuario;
 import br.thelma.armidoro.api.domain.usuario.UsuarioRepository;
 import br.thelma.armidoro.api.services.EmailService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/cadastrar")
+@SecurityRequirement(name = "bearer-key")
 public class CadastroController {
 
 
@@ -27,8 +29,10 @@ public class CadastroController {
     @PostMapping
     public ResponseEntity efetuarRequisiçãoCadastro(@RequestBody @Valid DadosCadastroUsuario novoUsuario) {
 
+        //se não já existir um usuario com aquele email
         if (usuarioRepository.findUsuariosPorNome(novoUsuario.login()).isEmpty()) {
 
+            //Set todos as requisições anteriores para false
             acessoCadastroRepository.findSeJaGerou(novoUsuario.login()).forEach(c -> {
                 acessoCadastroRepository.getReferenceById(c.getId()).setAtivo(false);
             });
@@ -39,7 +43,13 @@ public class CadastroController {
 
             return ResponseEntity.ok().build();
         } else {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body("""
+[
+    {                        
+        "campo": "Login",
+        "mensagem": "Esse email já está cadastrado"
+    }
+]""");
         }
     }
 
@@ -47,8 +57,7 @@ public class CadastroController {
     public ResponseEntity efetuarCadastro(@RequestBody @Valid DadosCadastroPin dados){
         boolean bate = ! acessoCadastroRepository.findPorPin(dados.pin().login(), dados.pin().pin())
                 .stream()
-                .filter(c -> {
-            return emailService.estaInvalido(c.getData());
+                .filter(c -> { return emailService.estaInvalido(c.getData());
                 }).toList().isEmpty();
 
         if(bate){

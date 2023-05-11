@@ -5,19 +5,19 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface AcessoCadastroRepository extends JpaRepository<AcessoCadastro, Long> {
+public interface AcessoSenhaRepository extends JpaRepository<AcessoSenha, Long> {
 
     @Query("""
             select a
-            from AcessoCadastro a
+            from AcessoSenha a
             where
             a.login = :login
             """)
-    List<AcessoCadastro> findSeJaGerou(String login);
+    List<AcessoSenha> findSeJaGerou(String login);
 
     @Query("""
             select a
-            from AcessoCadastro a
+            from AcessoSenha a
             where
             a.pin = :pin
             and
@@ -25,6 +25,5 @@ public interface AcessoCadastroRepository extends JpaRepository<AcessoCadastro, 
             and
             a.ativo = 1
             """)
-    AcessoCadastro findPorPin(String login, String pin);
-
+    AcessoSenha findPorPin(String login, String pin);
 }

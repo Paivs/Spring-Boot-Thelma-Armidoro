@@ -9,8 +9,6 @@ import java.util.List;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
-    UserDetails findByLogin(String login);
-
     @Query("""
             select u
             from Usuario u
@@ -18,6 +16,18 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
             u.login = :login
             """)
     List<Usuario> findUsuariosPorNome(String login);
+
+    @Query("""
+            select u
+            from Usuario u
+            where
+            u.login = :login
+            """)
+    Usuario findUsuarioPorNome(String login);
+
+    UserDetails findByLogin(String login);
+
+
 
     @Query("""
             select u

@@ -36,6 +36,11 @@ public class Usuario implements UserDetails {
         this.senha = encripta.encode(novoUsuario.senha());
     }
 
+    public Usuario(DadosAlterarSenha dados) {
+        login = dados.login();
+        senha = dados.senha();
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));

@@ -1,10 +1,7 @@
 package br.thelma.armidoro.api.controller;
 
 import br.thelma.armidoro.api.domain.cadastro.*;
-import br.thelma.armidoro.api.domain.usuario.DadosAlterarSenha;
-import br.thelma.armidoro.api.domain.usuario.DadosCadastroUsuario;
-import br.thelma.armidoro.api.domain.usuario.Usuario;
-import br.thelma.armidoro.api.domain.usuario.UsuarioRepository;
+import br.thelma.armidoro.api.domain.usuario.*;
 import br.thelma.armidoro.api.services.EmailService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -32,6 +29,21 @@ public class CadastroController {
 
     @Autowired
     public AcessoSenhaRepository acessoSenhaRepository;
+
+    @PostMapping("/validar")
+    public ResponseEntity validarSenhaPIN(@RequestBody DadosEnvioPin dados){
+        boolean bate = false;
+        try{ bate = acessoSenhaRepository.findPorPin(dados.login(), dados.pin()).estaInvalido(LocalDateTime.now());
+        } catch(Exception e){ System.out.println(e); }
+
+        if(bate) {
+            return ResponseEntity.ok().build();
+        }else{
+            return ResponseEntity.notFound().build();
+        }
+
+    }
+
 
     @PostMapping("/alterar")
     public ResponseEntity mudarSenha(@RequestBody DadosAlterarSenha dados){

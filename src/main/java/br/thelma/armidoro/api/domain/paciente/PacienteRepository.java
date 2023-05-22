@@ -15,4 +15,6 @@ public interface PacienteRepository extends JpaRepository<Paciente, Long> {
             p.id = :id
             """)
     Boolean findAtivoById(Long id);
+
+    Paciente findByEmail(String email);
 }

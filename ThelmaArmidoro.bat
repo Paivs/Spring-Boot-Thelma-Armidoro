@@ -1,0 +1,2 @@
+@echo off
+java -Dspring.profiles.active=prod -DDATASOURCE_URL=jdbc:mysql://localhost/thelmaDB?createDatabaseIfNotExist=true -DDATASOURCE_USERNAME=root -DDATASOURCE_PASSWORD=root -jar "D:\PROGBOYS\ThelmaArmidoro\api\Spring-Boot-Thelma-Armidoro/target/api-0.0.1-SNAPSHOT.jar"

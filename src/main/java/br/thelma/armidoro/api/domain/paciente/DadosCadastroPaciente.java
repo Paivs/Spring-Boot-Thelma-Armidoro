@@ -17,8 +17,9 @@ public record DadosCadastroPaciente(
         @NotBlank
         @Pattern(regexp = "^\\+\\d{1,3}\s\\(\\d{2}\\)\s\\d{9}", message = "Formato do telefone inválido -> +55 11 987654321")
         String telefone,
-        @Pattern(regexp = "^\\+\\d{1,3}\s\\(\\d{2}\\)\s\\d{8}", message = "Formato do telefone inválido -> +55 11 987654321")
+
         String telefone_fixo,
+
         @NotBlank
         @Pattern(regexp = "\\d{3}\\.\\d{3}\\.\\d{3}\\-\\d{2}", message = "Formato do cpf inválido -> 123.123.123-12")
         String cpf,

@@ -1,5 +1,7 @@
 package br.thelma.armidoro.api.controller;
 
+import br.thelma.armidoro.api.domain.paciente.DadosDetalhamentoPaciente;
+import br.thelma.armidoro.api.domain.paciente.PacienteRepository;
 import br.thelma.armidoro.api.domain.usuario.DadosAlterarEmail;
 import br.thelma.armidoro.api.domain.usuario.DadosAlterarSenha;
 import br.thelma.armidoro.api.domain.usuario.UsuarioRepository;
@@ -17,6 +19,9 @@ public class UsuarioController {
     @Autowired
     UsuarioRepository usuarioRepository;
 
+    @Autowired
+    PacienteRepository pacienteRepository;
+
     @PutMapping
     public ResponseEntity alterarSenha(@RequestBody @Valid DadosAlterarPerfil dados) throws Exception {
 
@@ -27,6 +32,19 @@ public class UsuarioController {
         }
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{login}")
+    public ResponseEntity getInfo(@PathVariable String login) throws Exception {
+
+        var email = login;
+
+        try{
+            var resul = pacienteRepository.findByEmail(email);
+            return ResponseEntity.ok().body(new DadosDetalhamentoPaciente(resul));
+        }catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
 }

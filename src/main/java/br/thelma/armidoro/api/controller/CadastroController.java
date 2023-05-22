@@ -53,6 +53,7 @@ public class CadastroController {
 
         if(bate){
             var encripta = new BCryptPasswordEncoder();
+            System.out.println("-==============-" + dados.senha());
             var senhaEncrp = encripta.encode(dados.senha());
 
             var id = usuarioRepository.findUsuarioPorNome(dados.login()).getId();

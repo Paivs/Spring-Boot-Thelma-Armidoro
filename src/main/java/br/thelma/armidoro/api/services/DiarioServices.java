@@ -4,6 +4,7 @@ import br.thelma.armidoro.api.domain.ValidacaoException;
 import br.thelma.armidoro.api.domain.diarios.*;
 import br.thelma.armidoro.api.domain.paciente.PacienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
@@ -29,10 +30,11 @@ public class DiarioServices {
         LocalTime meioDia = LocalTime.NOON;
         LocalDateTime data = LocalDateTime.of(hoje, meioDia);
 
-        if(diarioSonhosRepository.existsByData(data)){
-            var diarioSonhos = diarioSonhosRepository.findByData(data);
+        if(diarioSonhosRepository.existsByDataAndPaciente(data, paciente)){
+            var diarioSonhos = diarioSonhosRepository.findByDataAndPaciente(data, paciente);
             diarioSonhos.setTexto(dados.texto());
             diarioSonhos.setTitulo(dados.titulo());
+            diarioSonhosRepository.save(diarioSonhos);
         }else{
             diarioSonhosRepository.save(new DiarioSonhos(dados, paciente));
         }
@@ -48,8 +50,8 @@ public class DiarioServices {
         LocalTime meioDia = LocalTime.NOON;
         LocalDateTime data = LocalDateTime.of(hoje, meioDia);
 
-        if(diarioEmocoesRepository.existsByData(data)){
-            var diarioEmocoes = diarioEmocoesRepository.findByData(data);
+        if(diarioEmocoesRepository.existsByDataAndPaciente(data, paciente)){
+            var diarioEmocoes = diarioEmocoesRepository.findByDataAndPaciente(data, paciente);
             diarioEmocoes.setTexto(dados.texto());
             diarioEmocoes.setTitulo(dados.titulo());
             diarioEmocoesRepository.save(diarioEmocoes);
@@ -60,12 +62,14 @@ public class DiarioServices {
         return null;
     }
 
-    public DiarioSonhos obterSonhos(LocalDateTime data) {
-        return diarioSonhosRepository.findByData(data);
+    public DiarioSonhos obterSonhos(String data, String id) {
+        LocalDateTime dataFormatada = converterData(data);
+        return diarioSonhosRepository.encontrarPorDataPaciente(dataFormatada, pacienteRepository.getReferenceById(Long.valueOf(id)));
     }
 
-    public DiarioEmocoes obterEmocoes(LocalDateTime data) {
-        return diarioEmocoesRepository.findByData(data);
+    public DiarioEmocoes obterEmocoes(String data, String id) {
+        LocalDateTime dataFormatada = converterData(data);
+        return diarioEmocoesRepository.encontrarPorDataPaciente(dataFormatada, pacienteRepository.getReferenceById(Long.valueOf(id)));
     }
 
     public LocalDateTime converterData(String dataString){

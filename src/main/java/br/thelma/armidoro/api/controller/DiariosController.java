@@ -23,23 +23,38 @@ public class DiariosController {
         DadosDetalhamentoDiario diario;
         if(!dados.tipo()){ // sonhos
             diario = diarioServices.salvarSonhos(dados);
+            return ResponseEntity.ok(diario);
         } else if (dados.tipo()) { // emocoes
             diario = diarioServices.salvarEmocoes(dados);
+            return ResponseEntity.ok(diario);
         }
-        return ResponseEntity.ok().build();
+        return ResponseEntity.badRequest().build();
     }
 
-    @GetMapping("/sonhos/{data}")
-    public ResponseEntity requisitarDiarioSonhos(@PathVariable String data){
-        LocalDateTime dataFormatada = diarioServices.converterData(data);
-        DadosDetalhamentoDiario retorno = new DadosDetalhamentoDiario(diarioServices.obterSonhos(dataFormatada));
-        return ResponseEntity.ok(retorno);
+    @GetMapping("/sonhos/{id}/{data}")
+    public ResponseEntity requisitarDiarioSonhos(@PathVariable String id, @PathVariable String data){
+
+        var encontrado = diarioServices.obterSonhos(data, id);
+
+        if(encontrado == null){
+            System.out.println("Emoção não encontrada!");
+            return ResponseEntity.badRequest().build();
+        }else{
+            DadosDetalhamentoDiario retorno = new DadosDetalhamentoDiario(encontrado);
+            return ResponseEntity.ok(retorno);
+        }
     }
 
-    @GetMapping("/emocoes/{data}")
-    public ResponseEntity requisitarDiarioEmocoes(@PathVariable String data){
-        LocalDateTime dataFormatada = diarioServices.converterData(data);
-        DadosDetalhamentoDiario retorno = new DadosDetalhamentoDiario(diarioServices.obterEmocoes(dataFormatada));
-        return ResponseEntity.ok(retorno);
+    @GetMapping("/emocoes/{id}/{data}")
+    public ResponseEntity requisitarDiarioEmocoes(@PathVariable String id, @PathVariable String data){
+        var  encontrado = diarioServices.obterEmocoes(data, id);
+
+        if(encontrado == null){
+            System.out.println("Emoção não encontrada!");
+            return ResponseEntity.badRequest().build();
+        }else{
+            DadosDetalhamentoDiario retorno = new DadosDetalhamentoDiario(encontrado);
+            return ResponseEntity.ok(retorno);
+        }
     }
 }

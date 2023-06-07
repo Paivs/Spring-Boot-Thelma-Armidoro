@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,9 +27,15 @@ public class UsuarioController {
     public ResponseEntity alterarSenha(@RequestBody @Valid DadosAlterarPerfil dados) throws Exception {
 
         var user = usuarioRepository.findOneUsuariosPorNome(dados.login());
-        if(user.getSenha().equals(dados.senhaAntiga())){
-            usuarioRepository.findOneUsuariosPorNome(dados.login()).setSenha(dados.senhaNova());
-            usuarioRepository.findOneUsuariosPorNome(dados.login()).setLogin(dados.login());
+
+        var encripta = new BCryptPasswordEncoder();
+        var senhaEncrp = encripta.encode(dados.senhaNova());
+
+        if(encripta.matches(dados.senhaAntiga(), user.getSenha())){
+            var userLog = usuarioRepository.findOneUsuariosPorNome(dados.login());
+            userLog.setSenha(senhaEncrp);
+            usuarioRepository.save(userLog);
+            //usuarioRepository.findOneUsuariosPorNome(dados.login()).setLogin(dados.login());
         }
 
         return ResponseEntity.ok().build();

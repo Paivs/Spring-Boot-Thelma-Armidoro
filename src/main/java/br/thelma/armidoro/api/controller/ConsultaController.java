@@ -13,6 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @RestController
@@ -48,11 +52,72 @@ public class ConsultaController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Page<DadosDetalhamentoConsulta>> listarPorId(@PageableDefault(size = 10, sort = {"data"}) Pageable paginacao, @PathVariable Long id) {
-        var page = consultaRepository.findAll(paginacao).map(DadosDetalhamentoConsulta::new);
+        var page = consultaRepository.findAll(paginacao);//.map(DadosDetalhamentoConsulta::new);
 
-        var resul = page.stream().filter(c -> c.idPaciente() == id).collect(Collectors.toList());
+        var resul = page.stream().filter(c -> c.getPaciente().getId() == id && c.getMotivoCancelamento() == null).map(DadosDetalhamentoConsulta::new).collect(Collectors.toList());
 
         return ResponseEntity.ok(new PageImpl<DadosDetalhamentoConsulta>(resul));
+    }
+
+    @GetMapping("contem/{id}")
+    public ResponseEntity contemPorId(@PathVariable Long id) {
+        var page = consultaRepository.findAll();
+
+        var resul = page.stream().filter(c -> c.getPaciente().getId() == id && c.getMotivoCancelamento() == null).map(DadosDetalhamentoConsulta::new).collect(Collectors.toList());
+
+        if(resul.isEmpty()){
+            return ResponseEntity.badRequest().build();
+        }else if(!resul.isEmpty()){
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("tempo/{id}")
+    public ResponseEntity tempoPorId(@PathVariable Long id) {
+        var page = consultaRepository.findAll();
+
+        var resul = page.stream().filter(c -> c.getPaciente().getId() == id && c.getMotivoCancelamento() == null).collect(Collectors.toList());
+
+        Collections.sort(resul, Comparator.comparing(Consulta::getData));
+
+        try{
+        var dataConsulta = resul.stream().map(DadosDetalhamentoConsulta::new).findFirst()
+                .orElse(null)
+                .data();
+
+        LocalDateTime now = LocalDateTime.now();
+
+        var tempoParaConsulta = "";
+
+        if (dataConsulta != null) {
+            long minutosRestantes = now.until(dataConsulta, ChronoUnit.MINUTES);
+
+            if (minutosRestantes < 60) {
+                tempoParaConsulta = (minutosRestantes + " minutos");
+            } else {
+                long horasRestantes = now.until(dataConsulta, ChronoUnit.HOURS);
+
+                if (horasRestantes < 24) {
+                    long minutosExcedentes = minutosRestantes % 60;
+                    tempoParaConsulta = (horasRestantes + " horas e " + minutosExcedentes + " minutos");
+                } else {
+                    long diasRestantes = now.until(dataConsulta, ChronoUnit.DAYS);
+
+                    if (diasRestantes <= 28) {
+                        tempoParaConsulta = (diasRestantes + " dias");
+                    } else {
+                        tempoParaConsulta = ("Mais de um mês");
+                    }
+                }
+            }
+        }else {
+            return ResponseEntity.badRequest().body("Consulta não encontrada");
+        }
+        return ResponseEntity.ok().body("{\n\"valor\": \"" + tempoParaConsulta +"\"\n}");
+        }catch(Exception e){
+            return ResponseEntity.badRequest().build();
+        }
     }
 
 

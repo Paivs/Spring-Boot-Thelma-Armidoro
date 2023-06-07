@@ -76,6 +76,9 @@ public class Paciente {
         if (dados.telefone() != null) {
             this.telefone = dados.telefone();
         }
+        if (dados.telefoneFixo() != null) {
+            this.telefone_fixo = dados.telefoneFixo();
+        }
         if (dados.endereco() != null) {
             this.endereco.atualizarInformacoes(dados.endereco());
         }

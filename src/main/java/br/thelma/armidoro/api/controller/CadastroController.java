@@ -132,26 +132,33 @@ public class CadastroController {
 
     @PutMapping
     public ResponseEntity efetuarCadastro(@RequestBody @Valid DadosCadastroPin dados){
-        boolean bate = false;
-        try{ bate = acessoCadastroRepository.findPorPin(dados.pin().login(), dados.pin().pin()).estaInvalido(LocalDateTime.now());
-        } catch(Exception e){ System.out.println(e); }
 
-        if(bate){
-            usuarioRepository.save(new Usuario(dados.usuario()));
+        if(usuarioRepository.findUsuariosPorNome(dados.usuario().login()).isEmpty()) {
+            boolean bate = false;
+            try {
+                bate = acessoCadastroRepository.findPorPin(dados.pin().login(), dados.pin().pin()).estaInvalido(LocalDateTime.now());
+            } catch (Exception e) {
+                System.out.println(e);
+            }
 
-            return ResponseEntity.ok(dados.usuario());
-        }else if(!bate) {
-            return ResponseEntity.badRequest().body("""
-[
-    {                        
-        "campo": "Data",
-        "mensagem": "Tempo para inserir o PIN expirado"
-    }
-]""");
-        }
-        else{
+            if (bate) {
+                usuarioRepository.save(new Usuario(dados.usuario()));
+
+                return ResponseEntity.ok(dados.usuario());
+            } else if (!bate) {
+                return ResponseEntity.badRequest().body("""
+                        [
+                            {                        
+                                "campo": "Data",
+                                "mensagem": "Tempo para inserir o PIN expirado"
+                            }
+                        ]""");
+            } else {
                 return ResponseEntity.badRequest().build();
             }
+        }else{
+            return ResponseEntity.badRequest().build();
+        }
 
     }
 

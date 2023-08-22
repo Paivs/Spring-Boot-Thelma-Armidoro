@@ -94,18 +94,18 @@ public class ConsultaController {
             long minutosRestantes = now.until(dataConsulta, ChronoUnit.MINUTES);
 
             if (minutosRestantes < 60) {
-                tempoParaConsulta = (minutosRestantes + " minutos");
+                tempoParaConsulta = (minutosRestantes + " minuto(s)");
             } else {
                 long horasRestantes = now.until(dataConsulta, ChronoUnit.HOURS);
 
                 if (horasRestantes < 24) {
                     long minutosExcedentes = minutosRestantes % 60;
-                    tempoParaConsulta = (horasRestantes + " horas e " + minutosExcedentes + " minutos");
+                    tempoParaConsulta = (horasRestantes + " hora(s) e " + minutosExcedentes + " minuto(s)");
                 } else {
                     long diasRestantes = now.until(dataConsulta, ChronoUnit.DAYS);
 
                     if (diasRestantes <= 28) {
-                        tempoParaConsulta = (diasRestantes + " dias");
+                        tempoParaConsulta = (diasRestantes + " dia(s)");
                     } else {
                         tempoParaConsulta = ("Mais de um mês");
                     }

@@ -1,10 +1,15 @@
 package br.thelma.armidoro.api.controller;
 
+import br.thelma.armidoro.api.domain.DadosListagemDiarios;
 import br.thelma.armidoro.api.domain.diarios.*;
+import br.thelma.armidoro.api.domain.paciente.PacienteRepository;
 import br.thelma.armidoro.api.services.DiarioServices;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +22,15 @@ public class DiariosController {
 
     @Autowired
     private DiarioServices diarioServices;
+
+    @Autowired
+    private DiarioEmocoesRepository diarioEmocoesRepository;
+
+    @Autowired
+    private DiarioSonhosRepository diarioSonhosRepository;
+
+    @Autowired
+    private PacienteRepository pacienteRepository;
 
     @PostMapping
     public ResponseEntity cadastrarDiario(@RequestBody @Valid DadosCadastroDiario dados){
@@ -56,5 +70,19 @@ public class DiariosController {
             DadosDetalhamentoDiario retorno = new DadosDetalhamentoDiario(encontrado);
             return ResponseEntity.ok(retorno);
         }
+    }
+
+    @GetMapping("/emocoes/listar/{email}")
+    public ResponseEntity<Page<DadosListagemDiarios>> listarEmocoes(@PageableDefault(size = 10) Pageable paginacao, @PathVariable String email) {
+        System.out.println("LISTANDO DE " + email);
+        var page = diarioEmocoesRepository.encontrarPorPaciente(pacienteRepository.findByEmail(email).getId(), paginacao).map(t -> new DadosListagemDiarios(t));
+        return ResponseEntity.ok(page);
+    }
+
+    @GetMapping("/sonhos/listar/{email}")
+    public ResponseEntity<Page<DadosListagemDiarios>> listarSonhos(@PageableDefault(size = 10) Pageable paginacao, @PathVariable String email) {
+        System.out.println("LISTANDO DE " + email);
+        var page = diarioSonhosRepository.encontrarPorPaciente(pacienteRepository.findByEmail(email).getId(), paginacao).map(t -> new DadosListagemDiarios(t));
+        return ResponseEntity.ok(page);
     }
 }

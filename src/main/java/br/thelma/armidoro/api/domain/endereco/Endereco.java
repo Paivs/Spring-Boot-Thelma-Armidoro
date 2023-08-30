@@ -13,6 +13,7 @@ public class Endereco {
 
     private String logradouro;
     private String bairro;
+    private String pais;
     private String cep;
     private String numero;
     private String complemento;
@@ -24,6 +25,7 @@ public class Endereco {
         this.bairro = dados.bairro();
         this.cep = dados.cep();
         this.uf = dados.uf();
+        this.pais = dados.pais();
         this.cidade = dados.cidade();
         this.numero = dados.numero();
         this.complemento = dados.complemento();
@@ -38,6 +40,9 @@ public class Endereco {
         }
         if (dados.cep() != null) {
             this.cep = dados.cep();
+        }
+        if (dados.pais() != null) {
+            this.pais = dados.pais();
         }
         if (dados.uf() != null) {
             this.uf = dados.uf();

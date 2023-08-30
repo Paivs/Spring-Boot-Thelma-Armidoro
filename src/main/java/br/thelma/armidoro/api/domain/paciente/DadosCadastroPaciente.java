@@ -31,6 +31,9 @@ public record DadosCadastroPaciente(
         @NotNull
         EstadoCivil estado_civil,
 
+        @NotNull
+        GrauEscolaridade grau_escolaridade,
+
         @NotBlank
         String curso,
 

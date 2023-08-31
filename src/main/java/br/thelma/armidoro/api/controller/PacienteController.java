@@ -27,13 +27,19 @@ public class PacienteController {
     @PostMapping
     @Transactional
     public ResponseEntity cadastrar(@RequestBody @Valid DadosCadastroPaciente dados, UriComponentsBuilder uriBuilder) {
-        var paciente = new Paciente(dados);
-        repository.save(paciente);
-
-        var uri = uriBuilder.path("/pacientes/{id}").buildAndExpand(paciente.getId()).toUri();
-        return ResponseEntity.created(uri).body(new DadosDetalhamentoPaciente(paciente));
+        try {
+            var paciente = new Paciente(dados);
+            if (repository.findByEmail(paciente.getEmail()) != null) {
+                return ResponseEntity.badRequest().body("""
+                        { "campo": "Login", "mensagem": "Esse email já está cadastrado"}""");
+            }
+            repository.save(paciente);
+            var uri = uriBuilder.path("/pacientes/{id}").buildAndExpand(paciente.getId()).toUri();
+            return ResponseEntity.created(uri).body(new DadosDetalhamentoPaciente(paciente));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
-
 
 
     @GetMapping
